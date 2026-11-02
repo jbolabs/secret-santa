@@ -2,6 +2,13 @@
 
 TanStack Start on Cloudflare Workers, deployed with Alchemy v2. Follows the jbolabs standard in `~/code/projects/sites/docs/stack.md` (Alchemy owns all infra; Infisical secret tiers; prod deploys from CI only).
 
+## Product bar
+
+Build every app and site to the bar of Linear's website or Apple Notes: simple purpose, simple architecture, simple design, simple implementation.
+
+- Cut taglines, helper text and secondary labels. If a screen needs them to make sense, fix the layout.
+- Every decision should improve user experience (UX), developer experience (DX) and agent experience (AX) at once, without breaking anything.
+
 ## Map
 
 | Path | What lives there |
