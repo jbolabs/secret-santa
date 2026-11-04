@@ -13,9 +13,10 @@
  *
  * Prod deploys from CI on merge to `main`; the stack refuses otherwise.
  */
+
+import * as Cloudflare from "@alchemy.run/cloudflare";
 import * as Alchemy from "alchemy";
 import { AlchemyContext } from "alchemy/AlchemyContext";
-import * as Cloudflare from "alchemy/Cloudflare";
 import * as RemovalPolicy from "alchemy/RemovalPolicy";
 import { localState } from "alchemy/State";
 import { Effect, Layer } from "effect";

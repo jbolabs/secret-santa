@@ -14,8 +14,9 @@
  * uses. Add a value to Infisical (never a `.env`) and read it with
  * `Config.Redacted("NAME")` in a stack.
  */
+
+import * as Infisical from "@alchemy.run/infisical";
 import type { StackSecrets } from "alchemy";
-import * as Infisical from "alchemy/Infisical";
 
 import { isPullRequestStage } from "./stage.ts";
 

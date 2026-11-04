@@ -17,6 +17,9 @@
     "ci": "bun run check && bun run typecheck && bun run test"
   },
   "dependencies": {
+    "@alchemy.run/cloudflare": "2.0.0-beta.85",
+    "@alchemy.run/github": "2.0.0-beta.85",
+    "@alchemy.run/infisical": "2.0.0-beta.85",
     "@base-ui/react": "1.9.0",
     "@react-email/render": "^2.1.0",
     "@tailwindcss/vite": "^4.3.3",
@@ -25,10 +28,10 @@
     "@tanstack/react-router-ssr-query": "^1.167.3",
     "@tanstack/react-start": "^1.168.58",
     "@tanstack/router-plugin": "^1.168.40",
-    "alchemy": "2.0.0-beta.82",
+    "alchemy": "2.0.0-beta.85",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "effect": "4.0.4",
+    "effect": "4.1.2",
     "framer-motion": "^13.4.2",
     "lucide-react": "^1.47.0",
     "papaparse": "^5.7.0",
@@ -43,8 +46,8 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "5.20261005.1",
-    "@effect/platform-bun": "4.0.4",
-    "@effect/platform-node": "4.0.4",
+    "@effect/platform-bun": "4.1.2",
+    "@effect/platform-node": "4.1.2",
     "@shadcn/lint": "^0.1.0",
     "@tanstack/react-devtools": "^0.10.13",
     "@tanstack/react-router-devtools": "^1.167.2",
@@ -71,7 +74,7 @@
     "web-vitals": "^6.2.2"
   },
   "overrides": {
-    "@effect/platform-node-shared": "4.0.4"
+    "@effect/platform-node-shared": "4.1.2"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,jsonc,css,scss,md,mdx}": "bun x ultracite fix"
