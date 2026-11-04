@@ -1,3 +1,4 @@
+import { MAX_BUDGET_LENGTH, readBudget } from "../budget";
 import { EMAIL_PATTERN, MIN_DRAWING_PLAYERS, normalizeEmail } from "../players";
 import type { Constraint, Player } from "../types";
 import { toTitleCase } from "../utils";
@@ -33,6 +34,12 @@ export const exchangeSchema = {
   required: ["participants"],
   properties: {
     partyName: { type: "string", maxLength: 200 },
+    budget: {
+      type: "string",
+      maxLength: MAX_BUDGET_LENGTH,
+      description:
+        'Optional gift budget shown to every giver with their match, as written, e.g. "$30".',
+    },
     participants: {
       type: "array",
       minItems: 3,
@@ -85,6 +92,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 /** Validate the entire input before changing any draft state. */
 export function parseExchange(input: Record<string, unknown>): {
   partyName: string;
+  budget: string | undefined;
   players: Player[];
   constraints: Constraint[];
 } {
@@ -101,6 +109,7 @@ export function parseExchange(input: Record<string, unknown>): {
   ) {
     throw new Error("Party name must be a string of at most 200 characters.");
   }
+  const budget = readBudget(input.budget);
   const names = new Set<string>();
   const players = input.participants.map((value: unknown): Player => {
     if (
@@ -190,6 +199,7 @@ export function parseExchange(input: Record<string, unknown>): {
   );
   return {
     partyName: toTitleCase((input.partyName ?? "").toString().trim()),
+    budget,
     players,
     constraints,
   };

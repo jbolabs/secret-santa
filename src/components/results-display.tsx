@@ -17,6 +17,7 @@ interface ResultsDisplayProps {
   assignments: Assignment[];
   players: Player[];
   partyName?: string;
+  budget?: string;
   /** Public Turnstile key for this stage; the send button waits for its token. */
   turnstileSiteKey: string;
   onStartOver: () => void;
@@ -35,6 +36,7 @@ export function ResultsDisplay({
   assignments,
   players,
   partyName,
+  budget,
   turnstileSiteKey,
   onStartOver,
   onRedraw,
@@ -59,7 +61,12 @@ export function ResultsDisplay({
   const sent = useRef(false);
   const now = useNow();
 
-  const cards = planRevealCards({ assignments, partyName, players });
+  const cards = planRevealCards({
+    assignments,
+    budget,
+    partyName,
+    players,
+  });
   // Anyone in the draw with an inbox, plus organizers with one (even sitting out).
   const emailRecipients = players.filter(
     (player) => hasEmail(player) && (drawsNames(player) || player.isAdmin)
@@ -98,6 +105,7 @@ export function ResultsDisplay({
       const response = await fetch("/api/send-emails", {
         body: JSON.stringify({
           assignments,
+          budget,
           partyName,
           players,
           turnstileToken,

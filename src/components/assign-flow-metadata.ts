@@ -1,9 +1,9 @@
 export const ASSIGN_FLOW_STEPS = [
   {
-    description: "Give your gift exchange a name, or leave it blank.",
+    description: "Name your gift exchange and set a budget. Both optional.",
     id: 1,
-    label: "Name",
-    title: "Name your event",
+    label: "Event",
+    title: "Set up your event",
   },
   {
     description:

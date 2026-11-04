@@ -12,6 +12,7 @@ export interface AssignmentMail {
   readonly giverName: string;
   readonly receiverName: string;
   readonly partyName: string | undefined;
+  readonly budget: string | undefined;
 }
 
 export interface AdminMail {
@@ -63,9 +64,10 @@ export const planMail = (input: {
   readonly players: readonly Player[];
   readonly assignments: readonly Assignment[];
   readonly partyName: string | undefined;
+  readonly budget: string | undefined;
   readonly origin: string;
 }): { participants: AssignmentMail[]; admins: AdminMail[] } => {
-  const { players, assignments, partyName, origin } = input;
+  const { players, assignments, partyName, budget, origin } = input;
   const playerMap = new Map(players.map((p) => [p.id, p]));
   const event = partyName ?? "Secret Santa";
 
@@ -78,6 +80,7 @@ export const planMail = (input: {
     }
     if (hasEmail(giver)) {
       participants.push({
+        budget,
         giverName: giver.name,
         kind: "assignment",
         partyName,

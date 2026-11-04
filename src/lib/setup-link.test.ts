@@ -4,6 +4,7 @@ import { readSetupLink, setupUrl } from "./setup-link";
 
 const input = {
   partyName: "família",
+  budget: "  under 50 €  ",
   participants: [
     { name: "Sam", email: "sam@example.com" },
     { name: "Alex" },
@@ -46,6 +47,22 @@ describe(readSetupLink, () => {
     const result = readSetupLink(new URL(url.slice(0, -20)).hash);
     expect(result).toStrictEqual({
       error: "This setup link is damaged. Check that it was copied in full.",
+    });
+  });
+
+  it("keeps the budget as typed, treats blank as none and rejects a long one", () => {
+    const withBudget = (budget: string) =>
+      readSetupLink(
+        new URL(setupUrl("https://example.com", { ...input, budget })).hash
+      );
+    expect(withBudget(input.budget)).toHaveProperty(
+      "draft.budget",
+      "under 50 €"
+    );
+    const blank = withBudget(" ");
+    expect(blank && "draft" in blank && blank.draft.budget).toBeUndefined();
+    expect(withBudget("$".repeat(41))).toStrictEqual({
+      error: "Budget must be text of at most 40 characters.",
     });
   });
 

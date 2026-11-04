@@ -57,6 +57,11 @@ function RevealPage() {
                   <p className="text-primary font-serif text-5xl break-words sm:text-6xl">
                     {card.receiver}
                   </p>
+                  {card.budget && (
+                    <p className="text-foreground/80 pt-2 text-lg font-light tracking-wide">
+                      Budget: {card.budget}
+                    </p>
+                  )}
                   <p className="text-muted-foreground pt-4 text-sm font-light tracking-wide">
                     Shh, keep it a secret!
                   </p>

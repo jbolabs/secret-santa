@@ -1,11 +1,18 @@
 import { Crown, Printer } from "lucide-react";
 
+import { MAX_BUDGET_LENGTH } from "../lib/budget";
 import {
   drawingPlayers,
   drawsNames,
   handDeliveryPlayers,
 } from "../lib/players";
-import type { Assignment, Constraint, Player } from "../lib/types";
+import type {
+  Assignment,
+  Constraint,
+  EventDetails,
+  Player,
+} from "../lib/types";
+import { toTitleCase } from "../lib/utils";
 import type { AssignFlowStepId } from "./assign-flow-metadata";
 import { ConstraintsForm } from "./constraints-form";
 import { ConstraintsList } from "./constraints-list";
@@ -16,14 +23,14 @@ import { Input } from "./ui/input";
 
 interface AssignFlowStepsProps {
   step: AssignFlowStepId;
-  partyName: string;
+  event: EventDetails;
   players: Player[];
   constraints: Constraint[];
   assignments: Assignment[];
   hasAssignments: boolean;
   turnstileSiteKey: string;
-  onPartyNameChange: (value: string) => void;
-  onPartyNameKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  onEventChange: (event: EventDetails) => void;
+  onEventSubmit: () => void;
   onAddPlayer: (player: Player) => void;
   onImportPlayers: (players: Player[]) => void;
   onRemovePlayer: (playerId: string) => void;
@@ -39,14 +46,14 @@ interface AssignFlowStepsProps {
 
 export function AssignFlowSteps({
   step,
-  partyName,
+  event,
   players,
   constraints,
   assignments,
   hasAssignments,
   turnstileSiteKey,
-  onPartyNameChange,
-  onPartyNameKeyDown,
+  onEventChange,
+  onEventSubmit,
   onAddPlayer,
   onImportPlayers,
   onRemovePlayer,
@@ -59,26 +66,15 @@ export function AssignFlowSteps({
   onStartOver,
   onRedraw,
 }: AssignFlowStepsProps) {
+  const { partyName, budget } = event;
+
   if (step === 1) {
     return (
-      <div className="space-y-6 text-center">
-        <Input
-          variant="party"
-          type="text"
-          enterKeyHint="next"
-          autoFocus
-          value={partyName}
-          onChange={(e) => {
-            onPartyNameChange(e.target.value);
-          }}
-          onKeyDown={onPartyNameKeyDown}
-          placeholder="e.g. Office Party 2026"
-          aria-label="Gift exchange name"
-        />
-        <p className="text-muted-foreground text-sm font-light tracking-wide">
-          Optional — leave blank if you don’t need a name
-        </p>
-      </div>
+      <EventStep
+        event={event}
+        onChange={onEventChange}
+        onSubmit={onEventSubmit}
+      />
     );
   }
 
@@ -123,6 +119,7 @@ export function AssignFlowSteps({
         assignments={assignments}
         players={players}
         partyName={partyName}
+        budget={budget}
         turnstileSiteKey={turnstileSiteKey}
         onStartOver={onStartOver}
         onRedraw={onRedraw}
@@ -146,6 +143,11 @@ export function AssignFlowSteps({
                 <h2 className="text-foreground mt-1 text-xl">
                   {partyName.trim() || "Your Secret Santa"}
                 </h2>
+                {budget.trim() && (
+                  <p className="text-muted-foreground mt-1 text-base font-light">
+                    Budget: {budget.trim()}
+                  </p>
+                )}
               </div>
               <div>
                 <p className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
@@ -206,4 +208,58 @@ export function AssignFlowSteps({
   }
 
   return null;
+}
+
+function EventStep({
+  event,
+  onChange,
+  onSubmit,
+}: {
+  event: EventDetails;
+  onChange: (event: EventDetails) => void;
+  onSubmit: () => void;
+}) {
+  const submitOnEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      onSubmit();
+    }
+  };
+  return (
+    <div className="space-y-8 text-center">
+      <Input
+        variant="party"
+        type="text"
+        enterKeyHint="next"
+        autoFocus
+        value={event.partyName}
+        onChange={(e) => {
+          onChange({ ...event, partyName: toTitleCase(e.target.value) });
+        }}
+        onKeyDown={submitOnEnter}
+        placeholder="e.g. Office Party 2026"
+        aria-label="Gift exchange name"
+      />
+      <div className="mx-auto flex w-fit items-center gap-3">
+        <label
+          htmlFor="budget"
+          className="text-muted-foreground text-sm font-light tracking-wide"
+        >
+          Budget
+        </label>
+        <Input
+          id="budget"
+          type="text"
+          enterKeyHint="next"
+          maxLength={MAX_BUDGET_LENGTH}
+          value={event.budget}
+          onChange={(e) => {
+            onChange({ ...event, budget: e.target.value });
+          }}
+          onKeyDown={submitOnEnter}
+          placeholder="$30"
+          className="w-32 text-center"
+        />
+      </div>
+    </div>
+  );
 }

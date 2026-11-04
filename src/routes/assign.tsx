@@ -33,7 +33,7 @@ import {
   saveAssignments,
   saveData,
   saveConstraints,
-  savePartyName,
+  saveEvent,
   toggleAdmin,
   toggleSitsOut,
 } from "../lib/storage";
@@ -101,7 +101,8 @@ function AssignPage() {
     direction: 1 | -1;
   }>({ direction: 1, step: 1 });
   const { step, direction } = stepState;
-  const [partyName, setPartyName] = useState<string>("");
+  const [event, setEvent] = useState({ budget: "", partyName: "" });
+  const { partyName, budget } = event;
   const [isGenerating, setIsGenerating] = useState(false);
   const [errorDialog, setErrorDialog] = useState<{
     open: boolean;
@@ -141,7 +142,10 @@ function AssignPage() {
     saveData({ ...setup.draft, assignments: [] });
     // The hash only exists in the browser, so it can't seed state during SSR
     // oxlint-disable-next-line react/set-state-in-effect
-    setPartyName(setup.draft.partyName);
+    setEvent({
+      budget: setup.draft.budget ?? "",
+      partyName: setup.draft.partyName,
+    });
     dispatchList({ type: "sync_from_storage" });
     setStepState({ direction: 1, step: 4 });
   }, []);
@@ -166,14 +170,14 @@ function AssignPage() {
     setStepState({ direction: next >= step ? 1 : -1, step: next });
   };
 
-  const persistPartyName = () => {
-    if (partyName.trim()) {
-      const formatted = toTitleCase(partyName.trim());
-      setPartyName(formatted);
-      savePartyName(formatted);
-    } else {
-      savePartyName("");
-    }
+  const saveEventAndContinue = () => {
+    const saved = {
+      budget: budget.trim(),
+      partyName: toTitleCase(partyName.trim()),
+    };
+    setEvent(saved);
+    saveEvent(saved);
+    goToStep(2);
   };
 
   const handleAddPlayer = (player: Player) => {
@@ -284,17 +288,6 @@ function AssignPage() {
     });
   };
 
-  const handlePartyNameChange = (value: string) => {
-    setPartyName(toTitleCase(value));
-  };
-
-  const handlePartyNameKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      persistPartyName();
-      goToStep(2);
-    }
-  };
-
   const handleStepBack = () => {
     if (step > 1) {
       goToStep((step - 1) as AssignFlowStepId);
@@ -305,14 +298,15 @@ function AssignPage() {
 
   useExchangeWebMCP({
     partyName,
+    budget,
     players,
     constraints,
     assignments,
     isGenerating,
     goToStep,
     handleGenerateAssignments,
-    onConfigure: (name) => {
-      setPartyName(name);
+    onConfigure: (configured) => {
+      setEvent(configured);
       dispatchList({ type: "sync_from_storage" });
     },
   });
@@ -324,10 +318,7 @@ function AssignPage() {
     onBack: handleStepBack,
     onGenerateAssignments: handleGenerateAssignments,
     onGoToStep: goToStep,
-    onPersistPartyNameAndContinue: () => {
-      persistPartyName();
-      goToStep(2);
-    },
+    onPersistEventAndContinue: saveEventAndContinue,
     playersCount: drawing.length,
     step,
   });
@@ -353,15 +344,15 @@ function AssignPage() {
           onClearAllPlayers={handleClearAll}
           onClearConstraints={handleClearConstraints}
           onImportPlayers={handleImportPlayers}
-          onPartyNameChange={handlePartyNameChange}
-          onPartyNameKeyDown={handlePartyNameKeyDown}
+          onEventChange={setEvent}
+          onEventSubmit={saveEventAndContinue}
           onRemoveConstraint={handleRemoveConstraint}
           onRemovePlayer={handleRemovePlayer}
           onRedraw={() => handleGenerateAssignments(assignments)}
           onStartOver={handleStartOver}
           onToggleAdmin={handleToggleAdmin}
           onToggleSitsOut={handleToggleSitsOut}
-          partyName={partyName}
+          event={event}
           players={players}
           step={step}
           turnstileSiteKey={turnstileSiteKey}

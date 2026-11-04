@@ -16,6 +16,7 @@ If a user asks you to set up an exchange and you can't operate the page, don't w
 ```json
 {
   "partyName": "Henderson Family",
+  "budget": "$30",
   "participants": [
     { "name": "Sam", "email": "sam@example.com", "isAdmin": true },
     { "name": "Alex", "email": "alex@example.com" },
@@ -27,6 +28,7 @@ If a user asks you to set up an exchange and you can't operate the page, don't w
 
 - 3–100 participants with distinct names. `email` is optional; people without one get a printable QR card or private link after the draw.
 - The first participant organizes unless another has `"isAdmin": true`. Organizers with email receive every match. An organizer with `"sitsOut": true` runs the exchange without drawing.
+- `budget` is optional free text, up to 40 characters, shown as written with each person's match.
 - Exclusions use exact participant names and apply both ways unless `"bidirectional": false`.
 
 The link opens a review screen. The user draws names and approves sending; the link itself sends nothing. The data stays in the URL fragment, which the site's server never receives. Tell the user the link contains the names and emails, so they shouldn't share it.
@@ -35,7 +37,7 @@ The link opens a review screen. The user draws names and approves sending; the l
 
 Visit the site in a WebMCP-compatible browser and discover its tools. Call `get_exchange_guide` first for the complete Markdown workflow and input examples. The guide remains available across pages. WebMCP is experimental; agents without native support can use the normal interface.
 
-Collect participant names, email addresses for those who have one (email is optional), intended organizers and whether they play, optional event name, and exclusions. Reuse information the user has supplied or authorized for this task; ask for missing or ambiguous details. Organizers receive the full assignment summary, so make that role clear. Confirm the recipients and permission to send emails. Keep secret matches out of conversation.
+Collect participant names, email addresses for those who have one (email is optional), intended organizers and whether they play, optional event name and budget, and exclusions. Reuse information the user has supplied or authorized for this task; ask for missing or ambiguous details. Organizers receive the full assignment summary, so make that role clear. Confirm the recipients and permission to send emails. Keep secret matches out of conversation.
 
 Use the tools to configure the group, draw, and send after approval and verification. Setup and drawing do not send email. People without email get reveal cards the user prints or links the user texts from the page; agents cannot read those links. Report whether the exchange was configured, drawn, or its emails accepted by the server, and who still needs a card; acceptance does not prove inbox delivery.
 
