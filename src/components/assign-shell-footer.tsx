@@ -19,7 +19,7 @@ interface BuildAssignShellFooterInput {
   hasAssignments: boolean;
   playersCount: number;
   onBack: () => void;
-  onPersistPartyNameAndContinue: () => void;
+  onPersistEventAndContinue: () => void;
   onGoToStep: (step: AssignFlowStepId) => void;
   onGenerateAssignments: () => void;
 }
@@ -29,7 +29,7 @@ export function buildAssignShellFooter({
   hasAssignments,
   playersCount,
   onBack,
-  onPersistPartyNameAndContinue,
+  onPersistEventAndContinue,
   onGoToStep,
   onGenerateAssignments,
 }: BuildAssignShellFooterInput): AssignShellFooterProps {
@@ -43,7 +43,7 @@ export function buildAssignShellFooter({
         onBack,
         primaryAction: {
           label: "Continue",
-          onClick: onPersistPartyNameAndContinue,
+          onClick: onPersistEventAndContinue,
         },
         showBack: true,
       };

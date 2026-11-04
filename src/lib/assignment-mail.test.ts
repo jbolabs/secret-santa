@@ -15,6 +15,7 @@ describe(planMail, () => {
   it("emails each giver their receiver and links admins to compact results", () => {
     const { participants, admins } = planMail({
       assignments,
+      budget: "under 50 €",
       origin: "https://supersimplesecretsanta.com",
       partyName: "Office",
       players,
@@ -22,6 +23,7 @@ describe(planMail, () => {
 
     expect(participants).toStrictEqual([
       {
+        budget: "under 50 €",
         giverName: "Ann Lee",
         kind: "assignment",
         partyName: "Office",
@@ -30,6 +32,7 @@ describe(planMail, () => {
         to: "ann@example.com",
       },
       {
+        budget: "under 50 €",
         giverName: "Bo",
         kind: "assignment",
         partyName: "Office",
@@ -65,9 +68,10 @@ describe(planMail, () => {
     ]);
   });
 
-  it("falls back to Secret Santa when the party has no name", () => {
+  it("leaves out the budget and falls back to Secret Santa when neither is set", () => {
     const { participants } = planMail({
       assignments: [{ giverId: "b", receiverId: "a" }],
+      budget: undefined,
       origin: "http://localhost:3000",
       partyName: undefined,
       players,
@@ -75,12 +79,14 @@ describe(planMail, () => {
     expect(participants[0]?.subject).toBe(
       "Hey Bo! You've been assigned for Secret Santa..."
     );
+    expect(participants[0]?.budget).toBeUndefined();
   });
 
   it("refuses an assignment that names an unknown player", () => {
     expect(() =>
       planMail({
         assignments: [{ giverId: "a", receiverId: "zzz" }],
+        budget: undefined,
         origin: "http://localhost:3000",
         partyName: undefined,
         players,
@@ -94,6 +100,7 @@ describe(planMail, () => {
         { giverId: "k", receiverId: "b" },
         { giverId: "b", receiverId: "k" },
       ],
+      budget: undefined,
       origin: "http://localhost:3000",
       partyName: undefined,
       players: [
@@ -110,6 +117,7 @@ describe(planMail, () => {
   it("sends the summary to an organizer who sits out of the draw", () => {
     const { participants, admins } = planMail({
       assignments,
+      budget: undefined,
       origin: "http://localhost:3000",
       partyName: undefined,
       players: [

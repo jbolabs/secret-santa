@@ -4,12 +4,14 @@ interface SecretSantaAssignmentProps {
   giverName: string;
   receiverName: string;
   partyName?: string;
+  budget?: string;
 }
 
 export default function SecretSantaAssignment({
   giverName,
   receiverName,
   partyName,
+  budget,
 }: SecretSantaAssignmentProps) {
   return (
     <html lang="en">
@@ -161,6 +163,17 @@ export default function SecretSantaAssignment({
                         >
                           {receiverName}
                         </p>
+                        {budget && (
+                          <p
+                            style={{
+                              color: "#806656",
+                              fontSize: "16px",
+                              margin: "16px 0 0",
+                            }}
+                          >
+                            Budget: {budget}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </td>

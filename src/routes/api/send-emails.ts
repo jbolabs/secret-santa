@@ -8,6 +8,7 @@ import SecretSantaAssignment from "../../emails/secret-santa-assignment";
 import { env } from "../../env";
 import { planMail } from "../../lib/assignment-mail";
 import type { OutgoingMail } from "../../lib/assignment-mail";
+import { readBudget } from "../../lib/budget";
 import { verifyTurnstile } from "../../lib/turnstile";
 import type { Player, Assignment } from "../../lib/types";
 
@@ -20,12 +21,14 @@ interface RequestBody {
   players?: Player[];
   assignments?: Assignment[];
   partyName?: string;
+  budget?: unknown;
   turnstileToken?: string;
 }
 
 const renderMail = (mail: OutgoingMail) =>
   mail.kind === "assignment"
     ? jsx(SecretSantaAssignment, {
+        budget: mail.budget,
         giverName: mail.giverName,
         partyName: mail.partyName,
         receiverName: mail.receiverName,
@@ -88,8 +91,13 @@ export const Route = createFileRoute("/api/send-emails")({
         }
 
         try {
-          const { players, assignments, partyName, turnstileToken } =
-            (await request.json()) as RequestBody;
+          const {
+            players,
+            assignments,
+            partyName,
+            budget: rawBudget,
+            turnstileToken,
+          } = (await request.json()) as RequestBody;
 
           const human = await verifyTurnstile({
             fetch: fetch.bind(globalThis),
@@ -128,8 +136,19 @@ export const Route = createFileRoute("/api/send-emails")({
             );
           }
 
+          let budget: string | undefined;
+          try {
+            budget = readBudget(rawBudget);
+          } catch (error) {
+            return json(
+              { error: error instanceof Error ? error.message : "Bad budget" },
+              { status: 400 }
+            );
+          }
+
           const { participants, admins } = planMail({
             assignments,
+            budget,
             origin: env.SITE_ORIGIN,
             partyName,
             players,

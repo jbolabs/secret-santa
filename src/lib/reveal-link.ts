@@ -10,12 +10,14 @@ export interface RevealCard {
   readonly giver: string;
   readonly receiver: string;
   readonly partyName?: string;
+  readonly budget?: string;
 }
 
 interface EncodedCard {
   g: string;
   r: string;
   p?: string;
+  b?: string;
 }
 
 const toBase64Url = (text: string): string => {
@@ -41,6 +43,9 @@ export const encodeReveal = (card: RevealCard): string => {
   if (card.partyName) {
     encoded.p = card.partyName;
   }
+  if (card.budget) {
+    encoded.b = card.budget;
+  }
   return toBase64Url(JSON.stringify(encoded));
 };
 
@@ -59,8 +64,9 @@ export const decodeReveal = (value: string | undefined): RevealCard | null => {
     ) {
       return null;
     }
-    const { g, r, p } = parsed as EncodedCard;
+    const { g, r, p, b } = parsed as EncodedCard;
     return {
+      budget: typeof b === "string" && b ? b : undefined,
       giver: g,
       receiver: r,
       partyName: typeof p === "string" && p ? p : undefined,
@@ -78,8 +84,9 @@ export const planRevealCards = (input: {
   readonly players: readonly Player[];
   readonly assignments: readonly Assignment[];
   readonly partyName: string | undefined;
+  readonly budget: string | undefined;
 }): RevealCard[] => {
-  const { players, assignments, partyName } = input;
+  const { players, assignments, partyName, budget } = input;
   const byId = new Map(players.map((p) => [p.id, p]));
   const receiverIdByGiver = new Map(
     assignments.map((a) => [a.giverId, a.receiverId])
@@ -93,6 +100,7 @@ export const planRevealCards = (input: {
     const receiver = receiverId ? byId.get(receiverId) : undefined;
     if (receiver) {
       cards.push({
+        budget: budget || undefined,
         giver: giver.name,
         partyName: partyName || undefined,
         receiver: receiver.name,

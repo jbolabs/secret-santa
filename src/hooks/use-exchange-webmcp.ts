@@ -2,7 +2,12 @@ import { useRef } from "react";
 
 import type { AssignFlowStepId } from "../components/assign-flow-metadata";
 import { getData, saveData } from "../lib/storage";
-import type { Assignment, Constraint, Player } from "../lib/types";
+import type {
+  Assignment,
+  Constraint,
+  EventDetails,
+  Player,
+} from "../lib/types";
 import {
   emptySchema,
   exchangeSchema,
@@ -12,12 +17,13 @@ import { useWebMCPTools } from "./use-webmcp-tools";
 
 interface ExchangeToolsOptions {
   partyName: string;
+  budget: string;
   players: Player[];
   constraints: Constraint[];
   assignments: Assignment[];
   isGenerating: boolean;
   goToStep: (step: AssignFlowStepId) => void;
-  onConfigure: (name: string) => void;
+  onConfigure: (event: EventDetails) => void;
   handleGenerateAssignments: () => {
     error?: string;
     status?: string;
@@ -28,6 +34,7 @@ interface ExchangeToolsOptions {
 
 export function useExchangeWebMCP({
   partyName,
+  budget,
   players,
   constraints,
   assignments,
@@ -54,6 +61,7 @@ export function useExchangeWebMCP({
       annotations: { readOnlyHint: true, untrustedContentHint: true },
       execute: () => ({
         partyName,
+        budget,
         participants: players,
         exclusions: constraints,
         status: exchangeStatus,
@@ -62,7 +70,7 @@ export function useExchangeWebMCP({
     {
       name: "configure_exchange",
       description:
-        "Set up an empty exchange with all participants, optional name and exclusions. Email is optional per person: people without one (such as kids) get a printable QR card or private link after the draw. First participant is organizer unless isAdmin is specified; organizers with email get ALL matches. An organizer can set sitsOut to run it without drawing. Ask who should organize. Only works on an empty draft; use the visible form to edit an existing draft. Does not draw or send email.",
+        "Set up an empty exchange with all participants, optional name, budget and exclusions. Email is optional per person: people without one (such as kids) get a printable QR card or private link after the draw. First participant is organizer unless isAdmin is specified; organizers with email get ALL matches. An organizer can set sitsOut to run it without drawing. Ask who should organize. Only works on an empty draft; use the visible form to edit an existing draft. Does not draw or send email.",
       inputSchema: exchangeSchema,
       annotations: { untrustedContentHint: true },
       execute: (input) => {
@@ -74,7 +82,10 @@ export function useExchangeWebMCP({
         }
         const draft = parseExchange(input);
         saveData({ ...draft, assignments: [] });
-        onConfigure(draft.partyName);
+        onConfigure({
+          budget: draft.budget ?? "",
+          partyName: draft.partyName,
+        });
         goToStep(4);
         return {
           status: "draft",

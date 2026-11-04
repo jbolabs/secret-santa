@@ -3,12 +3,19 @@ import {
   removePersisted,
   writePersistedJson,
 } from "./client-persist";
-import type { Assignment, Constraint, Player, SecretSantaData } from "./types";
+import type {
+  Assignment,
+  Constraint,
+  EventDetails,
+  Player,
+  SecretSantaData,
+} from "./types";
 
 const STORAGE_KEY = "secret-santa-data";
 
 const defaultData: SecretSantaData = {
   assignments: [],
+  budget: undefined,
   constraints: [],
   partyName: undefined,
   players: [],
@@ -130,13 +137,10 @@ export function clearAssignments(): void {
   saveData(data);
 }
 
-export function getPartyName(): string | undefined {
-  return getData().partyName;
-}
-
-export function savePartyName(partyName: string): void {
+export function saveEvent(event: EventDetails): void {
   const data = getData();
-  data.partyName = partyName;
+  data.partyName = event.partyName;
+  data.budget = event.budget;
   saveData(data);
 }
 

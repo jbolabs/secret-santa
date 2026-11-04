@@ -162,6 +162,9 @@ function PrintableCards({
             <p className="max-w-56 text-sm leading-snug">
               Scan to see who you’re buying for. Shh, it’s a secret!
             </p>
+            {card.budget && (
+              <p className="text-sm font-medium">Budget: {card.budget}</p>
+            )}
           </article>
         ))}
       </div>

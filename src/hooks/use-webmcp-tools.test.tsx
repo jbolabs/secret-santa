@@ -40,6 +40,7 @@ function ExchangeHarness() {
   useExchangeWebMCP({
     ...data,
     partyName: data.partyName ?? "",
+    budget: data.budget ?? "",
     isGenerating: false,
     goToStep: () => {},
     onConfigure: () => setData(getData()),
@@ -69,6 +70,7 @@ describe("WebMCP", () => {
 
   const input = {
     partyName: "Demo",
+    budget: "$30",
     participants: ["Alice", "Bob", "Cara", "Dan"].map((name) => ({
       name,
       email: `${name}@example.com`,
@@ -240,5 +242,6 @@ describe("WebMCP", () => {
     const status = await registry.get("get_exchange_status")?.execute({});
     expect(status).not.toHaveProperty("assignments");
     expect(status).toHaveProperty("status", "ready_to_send");
+    expect(status).toHaveProperty("budget", "$30");
   });
 });

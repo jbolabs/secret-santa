@@ -9,7 +9,12 @@ import {
 
 describe(encodeReveal, () => {
   it("round-trips non-Latin names through a URL-safe value", () => {
-    const card = { giver: "Zoë 🎄", partyName: "Família", receiver: "李雷" };
+    const card = {
+      budget: "under 50 €",
+      giver: "Zoë 🎄",
+      partyName: "Família",
+      receiver: "李雷",
+    };
     const value = encodeReveal(card);
     expect(value).toMatch(/^[\w-]+$/u);
     expect(value).not.toContain("Zo");
@@ -25,6 +30,7 @@ describe(encodeReveal, () => {
     );
     expect(url.pathname).toBe("/reveal");
     expect(decodeReveal(url.searchParams.get("d") ?? "")).toStrictEqual({
+      budget: undefined,
       giver: "Kid",
       partyName: undefined,
       receiver: "Mom",
@@ -33,6 +39,16 @@ describe(encodeReveal, () => {
 });
 
 describe(decodeReveal, () => {
+  it("still opens links made before budgets existed", () => {
+    const legacy = btoa(JSON.stringify({ g: "Kid", p: "Office", r: "Mom" }));
+    expect(decodeReveal(legacy)).toStrictEqual({
+      budget: undefined,
+      giver: "Kid",
+      partyName: "Office",
+      receiver: "Mom",
+    });
+  });
+
   it.each([undefined, "", "not base64!", btoa("[]"), btoa('{"g":1}')])(
     "rejects %s",
     (value) => {
@@ -49,6 +65,7 @@ describe(planRevealCards, () => {
         { giverId: "b", receiverId: "j" },
         { giverId: "j", receiverId: "k" },
       ],
+      budget: "$20",
       partyName: "",
       players: [
         { id: "m", isAdmin: true, name: "Mom", sitsOut: true },
@@ -58,8 +75,8 @@ describe(planRevealCards, () => {
       ],
     });
     expect(cards).toStrictEqual([
-      { giver: "Kid", partyName: undefined, receiver: "Bo" },
-      { giver: "Jo", partyName: undefined, receiver: "Kid" },
+      { budget: "$20", giver: "Kid", partyName: undefined, receiver: "Bo" },
+      { budget: "$20", giver: "Jo", partyName: undefined, receiver: "Kid" },
     ]);
   });
 });

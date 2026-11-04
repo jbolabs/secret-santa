@@ -25,9 +25,17 @@ export interface Assignment {
   receiverId: string;
 }
 
+/** Step 1 of setup: both optional, blank means none. */
+export interface EventDetails {
+  partyName: string;
+  budget: string;
+}
+
 export interface SecretSantaData {
   players: Player[];
   constraints: Constraint[];
   assignments: Assignment[];
   partyName?: string;
+  /** Free text, e.g. "$30"; see `src/lib/budget.ts`. */
+  budget?: string;
 }
