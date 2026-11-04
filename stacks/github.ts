@@ -10,9 +10,10 @@
  * reads `secret-santa-prod` env `preview`) and a GitHub login. Deploy once,
  * then again to rotate (bump `deployTokens.generation`).
  */
+
+import * as Cloudflare from "@alchemy.run/cloudflare";
+import * as GitHub from "@alchemy.run/github";
 import * as Alchemy from "alchemy";
-import * as Cloudflare from "alchemy/Cloudflare";
-import * as GitHub from "alchemy/GitHub";
 import { Effect, Layer } from "effect";
 
 import { accountId, deployTokens, repository, zoneId } from "./config.ts";
@@ -173,13 +174,11 @@ export default Alchemy.Stack(
       enforcement: "active",
       name: "main",
       owner,
+      pullRequest: { requiredApprovingReviewCount: 0 },
       repository: repo,
-      rules: {
-        pullRequest: { requiredApprovingReviewCount: 0 },
-        requiredStatusChecks: {
-          checks: [{ context: "check" }],
-          strictRequiredStatusChecksPolicy: false,
-        },
+      requiredStatusChecks: {
+        checks: [{ context: "check" }],
+        strictRequiredStatusChecksPolicy: false,
       },
       target: "branch",
     });
